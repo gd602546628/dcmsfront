@@ -1,0 +1,51 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: dartagnan
+  Date: 2017/12/19
+  Time: 14:08
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@include file="common.jsp" %>
+<html>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
+<style>
+    .login-page{
+
+    }
+    .login-main {
+       margin-top: 200px;
+    }
+    .login-submit{
+        margin-top: 20px;
+    }
+</style>
+<head>
+    <title>登录</title>
+</head>
+<body>
+<div class="dc-page login-page">
+    <div class="main flex-pack-center login-main">
+        <form action="/dcmsfront/weixin/login.do" method="post" class="">
+            <div class="weui-cell background-write">
+                <div class="weui-cell_hd">
+                    <label class="weui-label">手机号</label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input type="text" name="username" placeholder="用户名" class="weui-input">
+                </div>
+            </div>
+            <div class="weui-cell background-write" style="margin-top: 20px">
+                <div class="weui-cell_hd">
+                    <label class="weui-label">密码</label>
+                </div>
+                <div class="weui-cell__bd">
+                    <input type="text" name="username" placeholder="密码" class="weui-input">
+                </div>
+            </div>
+            <input type="submit" value="提交" class="weui-btn weui-btn_primary login-submit">
+        </form>
+    </div>
+</div>
+</body>
+</html>

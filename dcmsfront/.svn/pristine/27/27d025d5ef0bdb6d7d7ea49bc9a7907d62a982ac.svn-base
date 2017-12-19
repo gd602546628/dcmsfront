@@ -1,0 +1,8 @@
+var pageInit = function () {
+    $(function () {
+        var el = $('.dc-page')[0]
+        el.style.height = document.documentElement.clientHeight + 'px'
+        el.style.width = document.documentElement.clientWidth + 'px'
+    })
+}
+pageInit()
