@@ -24,8 +24,7 @@ import javax.annotation.Resource;
 public class LoginController {
 
 
-
-    @RequestMapping(value="/login.do", method = RequestMethod.GET)
+    @RequestMapping(value = "/login.do", method = RequestMethod.GET)
     public String welcome() {
         Subject currentUser = SecurityUtils.getSubject();
         if (null != currentUser && currentUser.isAuthenticated()) {
@@ -33,6 +32,7 @@ public class LoginController {
         }
         return "login";
     }
+
     @RequestMapping(value = "/login.do", method = RequestMethod.POST)
     public String login(@RequestParam("username") String username,
                         @RequestParam("password") String password) {
@@ -40,12 +40,11 @@ public class LoginController {
         Subject currentUser = SecurityUtils.getSubject();
 
         if (!currentUser.isAuthenticated()) {
-             result = login(currentUser, username, password);
+            result = login(currentUser, username, password);
         }
         return result;
     }
 
-  
 
     private String login(Subject currentUser, String username, String password) {
         String result = "login";
@@ -93,5 +92,5 @@ public class LoginController {
         return "true";
     }
 
-  
+
 }
