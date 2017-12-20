@@ -30,7 +30,8 @@ public class LoginController {
         if (null != currentUser && currentUser.isAuthenticated()) {
             return "";
         }
-        return "login";
+        //return "login";
+        return "wxIndex/index";
     }
 
     @RequestMapping(value = "/login.do", method = RequestMethod.POST)

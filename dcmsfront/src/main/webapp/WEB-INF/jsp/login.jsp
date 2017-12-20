@@ -9,13 +9,15 @@
 <%@include file="common.jsp" %>
 <html>
 <style>
-    .login-page{
+    .login-page {
 
     }
+
     .login-main {
-       margin-top: 200px;
+        margin-top: 200px;
     }
-    .login-submit{
+
+    .login-submit {
         margin-top: 20px;
     }
 </style>
@@ -46,5 +48,7 @@
         </form>
     </div>
 </div>
+<script>
+</script>
 </body>
 </html>

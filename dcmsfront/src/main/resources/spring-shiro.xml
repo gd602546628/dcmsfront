@@ -36,7 +36,11 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
         <property name="filterChainDefinitions">
             <value>            <!-- **代表任意子目录 -->
+                /office/** = anon
+                /customer/** = anon
                 /manage/** = authc,roles[user]
+                <!--/customer/** = authc,roles[user]-->
+                <!--/office/** = authc,roles[user]-->
                 /logout=logout
             </value>
         </property>

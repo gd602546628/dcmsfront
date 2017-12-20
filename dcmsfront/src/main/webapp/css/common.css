@@ -1,13 +1,19 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 .dc-page {
     display: -webkit-box;
     display: -webkit-flex;
     display: -ms-flexbox;
     display: flex;
-    -webkit-box-orient: vertical;
     -webkit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
     background-color: #f8f8f8;
+    -webkit-overflow-scrolling: touch;
+    display: none;
 }
 
 .dc-page .main {

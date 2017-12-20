@@ -6,7 +6,9 @@ package com.kissdental.weixin.dao;
 import com.kissdental.weixin.entity.Customer;
 
 
+
 public interface CustomerDao  {
 
     public Customer getCustomerByPhone(String phone);
+
 }

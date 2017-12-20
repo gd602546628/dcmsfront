@@ -5,7 +5,8 @@
 <configuration>
 
 	<typeAliases>
-		<typeAlias alias="Customer" type="com.kissdental.weixin.entity.Customer"/>
+		<typeAlias type="com.kissdental.weixin.entity.Customer" alias="Customer" />
+		<typeAlias type="com.kissdental.weixin.entity.Office" alias="Office"/>
 	</typeAliases>
 
 </configuration>
