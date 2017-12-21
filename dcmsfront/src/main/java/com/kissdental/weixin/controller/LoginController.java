@@ -31,6 +31,8 @@ public class LoginController {
             return "";
         }
         return "login";
+        // return "medicalResource/medicalResource";
+       // return "wxIndex/index";
     }
 
     @RequestMapping(value = "/login.do", method = RequestMethod.POST)

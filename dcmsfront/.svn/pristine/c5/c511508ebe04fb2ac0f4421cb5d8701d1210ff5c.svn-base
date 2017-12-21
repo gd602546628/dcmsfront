@@ -1,0 +1,32 @@
+package com.kissdental.weixin.controller;
+
+import com.kissdental.weixin.common.JsonMapper;
+import com.kissdental.weixin.entity.Customer;
+import com.kissdental.weixin.service.CustomerService;
+import org.apache.shiro.SecurityUtils;
+import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+/**
+ * Created by dartagnan on 2017/12/19.
+ */
+@Controller
+@RequestMapping("/customer")
+public class CustomerController {
+
+    @Autowired
+    private CustomerService customerService;
+
+    private JsonMapper mapper = JsonMapper.getInstance();
+
+    @ResponseBody
+    @RequestMapping(value="/getInfo")
+    public Customer getCustoerInfo(String phone){
+
+        return customerService.getCustomerByPhone(phone);
+    }
+
+}

@@ -1,0 +1,183 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<head>
+    <meta charset="UTF-8">
+    <meta content="yes" name="apple-mobile-web-app-capable">
+    <meta content="black" name="apple-mobile-web-app-status-bar-style">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="css/reset.css"/>
+    <link rel="stylesheet" href="css/toup.css"/>
+    <!--<link rel="stylesheet" href="swiper/swiper.min.css">-->
+    <script src="js/jquery-1.11.3.js"></script>
+    <script src="js/fontSize.js"></script>
+    <title>问卷调查</title>
+</head>
+<body>
+<section class="toup" id="t1">
+    <!-- <div class="logo">
+        <img src="images/logo.png"/>
+    </div> -->
+    <div class="swipers">
+        <div class="con" id="homePage">
+            <!--<h1>lamoda调查问卷</h1>-->
+            <!--<p>感谢光临lamoda体验中心！</p>-->
+            <!--<p>3D时尚定制鞋开创者lamoda是国内领先的鞋类私人订制品牌，致力于为您设计、生产您想要的鞋、舒适的鞋。</p>-->
+            <!--<p>lamoda自推出“DIY自主设计”以来，受到了众多客户朋友的喜爱与追捧，为了让“DIY”能够更好地满足您对鞋子的所有向往，我们非常期待能知道您的想法。</p>-->
+            <!--<p>坐下来，品一杯咖啡，细细地想一想，您心中的lamodaDIY，是什么样的呢？</p>-->
+        </div>
+        <a href="javascript:;" class="jion">参加本调查</a>
+    </div>
+</section>
+<section class="toup" id="t2" >
+    <!-- <div class="logo">
+        <img src="images/logo.png"/>
+    </div> -->
+    <div class="swipers">
+        <!-- 上下 -->
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+
+            </div>
+            <div class="preNexts">
+                <div class="swiper-button-prev">
+                    <div class="pre"></div>
+                    上一题
+                </div>
+                <div class="swiper-button-next">
+                    <div class="next"></div>
+                    下一题
+                </div>
+            </div>
+        </div>
+        <!-- 上下end -->
+    </div>
+</section>
+<section class="toup" id="t3" style="display: none">
+    <!-- <div class="logo">
+        <img src="images/logo.png"/>
+    </div> -->
+    <div class="swipers">
+        <div class="con con1">
+            <!--<input type="number" name="" class="phone" placeholder="手机号码"/>-->
+            <div class="smile">
+                <p>非常感谢您的配合!</p>
+            </div>
+        </div>
+        <a class="btn tijiao">提交问卷</a>
+    </div>
+</section>
+<!--<script src="swiper/swiper.min.js"></script>-->
+<script>
+
+
+    $(function () {
+        $("#t2,#t3").hide();
+        //获取url参数
+        (function ($) {
+            $.getUrlParam = function (name) {
+                var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+                var r = window.location.search.substr(1).match(reg);
+                if (r != null) return unescape(r[2]);
+                return null;
+            }
+        })(jQuery);
+        var pre = 0;
+        var next = 1;
+
+        var naireId = $.getUrlParam('naireId');
+        var j = 0;
+        $.post("http://39.108.178.178/dcms/api/questionnaire/form",{'id':naireId},function (result) {
+//            var json = {};//提交答案json
+            var naire = result.data;
+            var questions = naire.questionnaireQuestionList;
+            $("#homePage").html("<h1>"+naire.title+"</h1><p>"+naire.description+"</p>")
+            var html = '';
+            $.each(questions,function (index, question ) {
+                html +=  '<div class="swiper-slide" id="question'+index+'"> ' +
+                            '<div class="scores"> ' +
+                            '<h3>'+naire.title+'</h3> ' +
+                            '<div class="f"><span>'+(index+1)+'</span>'+question.questionName+'</div> ' +
+                            '<div class="choose"> ' ;
+                $.each(question.optionList,function (i,option) {
+                    j++;
+                    if(question.type=='1'){
+                        html += '<div class="input"><label  for="'+j+'"><input type="radio" category="'+question.type+'" name="score'+(index+1)+'" id="'+j+'"/ questionId="'+question.id+'" optionId="'+option.id+'">' +option.optionValue+':'+option.optionContent+
+                            '</label></div>' ;
+                    }else{
+                        html += '<div class="input"><label for="'+j+'"><input type="checkbox" category="'+question.type+'" name="score'+(index+1)+'" id="'+j+'"/ questionId="'+question.id+'" optionId="'+option.id+'">' +option.optionValue+':'+option.optionContent+
+                            '</label> </div>' ;
+                    }
+                        })
+                html +='</div> ' +
+                    '</div> ' +
+                    '</div>';
+            })
+
+            $(".swiper-wrapper").html(html);
+
+
+            $(".swiper-button-next").click(function () {
+                if(next<questions.length){
+                    $(".swiper-slide").hide();
+                    $("#question"+next).show();
+                    next=next+1;
+                    pre=pre+1;
+
+                }else{
+                    $("#t2").hide();
+                    $("#t3").show();
+                }
+
+            });
+
+
+            $(".swiper-button-prev").click(function () {
+                if(pre>0){
+                    next=next-1;
+                    pre=pre-1;
+                    $(".swiper-slide").hide();
+                    $("#question"+pre).show();
+
+                }
+            });
+
+            
+
+            $("a.jion").on("click", function () {
+                $("#t1").hide();
+                $("#t2").show();
+                $(".swiper-slide").hide();
+                $("#question0").show();
+            });
+
+            $(".tijiao").click(function () {
+                var optionIds ="";
+                $.each($("input"),function (index,obj) {
+                    if($(obj).prop('checked')){
+//                        console.info(obj);
+//                        var questionId = $(this).attr("questionId");
+                        var optionId = $(this).attr("optionId");
+                        optionIds += optionId+",";
+                    }
+                });
+
+                var url = "http://39.108.178.178/dcms/api/questionnaire/answer";
+                $.post(url,{"answer":optionIds,"naireId":naireId},function (result) {
+                    if(result.code=='000000'){
+                        alert(result.mesg);
+                        $('.tijiao').hide();
+                    }else{
+                        alert(result.mesg);
+                    }
+                })
+            })
+
+        })
+
+    });
+
+
+</script>
+</body>
+</html>

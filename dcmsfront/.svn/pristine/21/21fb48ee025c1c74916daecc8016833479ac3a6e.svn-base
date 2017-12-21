@@ -1,0 +1,23 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2017/12/20/020
+  Time: 9:43
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@include file="../common.jsp" %>
+<html>
+<head>
+    <title>Title</title>
+    <script>
+        locationService.locationTo({
+            dLat: '24.360483', // 目的地纬度
+            dLng: '102.555847', // 目的地经度
+            dName: '群众工作局' //  目的地名称
+        })
+    </script>
+</head>
+<body>
+</body>
+</html>

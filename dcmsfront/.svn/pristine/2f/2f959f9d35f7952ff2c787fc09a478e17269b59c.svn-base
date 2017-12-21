@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kissdental.weixin.dao.ArticleDataDao">
+    
+	<sql id="cmsArticleDataColumns">
+		a.id AS "id",
+		a.content AS "content",
+		a.copyfrom AS "copyfrom",
+		a.relation AS "relation",
+		a.allow_comment AS "allow_comment",
+		ca.id AS "article.id",
+		ca.title AS "article.title",
+		ca.create_date AS "article.createDate"
+	</sql>
+	
+	<sql id="cmsArticleDataJoins">
+		join cms_article ca on a.id = ca.id
+	</sql>
+    
+	<select id="get" resultType="ArticleData">
+		SELECT 
+			<include refid="cmsArticleDataColumns"/>
+		FROM cms_article_data a
+		<include refid="cmsArticleDataJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+</mapper>
