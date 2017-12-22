@@ -7,6 +7,10 @@
 	<typeAliases>
 		<typeAlias type="com.kissdental.weixin.entity.Customer" alias="Customer" />
 		<typeAlias type="com.kissdental.weixin.entity.Office" alias="Office"/>
+		<typeAlias type="com.kissdental.weixin.entity.Article" alias="Article"/>
+		<typeAlias type="com.kissdental.weixin.entity.ArticleData" alias="ArticleData"/>
+		<typeAlias type="com.kissdental.weixin.entity.Category"	alias="Category"/>
+		<typeAlias type="com.kissdental.weixin.entity.Site" alias="Site"/>
 	</typeAliases>
 
 </configuration>

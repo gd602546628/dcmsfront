@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kissdental.weixin.dao.ArticleDao">
+    
+	<sql id="cmsArticleColumns">
+		a.id AS "id",
+		a.category_id AS "category.id",
+		a.title AS "title",
+		a.link AS "link",
+		a.color AS "color",
+		a.image AS "image",
+		a.keywords AS "keywords",
+		a.description AS "description",
+		a.weight AS "weight",
+		a.weight_date AS "weightDate",
+		a.hits AS "hits",
+		a.posid AS "posid",
+		a.custom_content_view AS "customContentView",
+		a.view_config AS "viewConfig",
+		a.create_date AS "createDate",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		c.name AS "category.name"
+	</sql>
+	
+	<sql id="cmsArticleJoins">
+		JOIN cms_category c ON c.id = a.category_id
+	</sql>
+    
+	<select id="get" resultType="Article">
+		SELECT 
+			<include refid="cmsArticleColumns"/>
+		FROM cms_article a
+		<include refid="cmsArticleJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Article">
+		SELECT 
+			<include refid="cmsArticleColumns"/>
+		FROM cms_article a
+		<include refid="cmsArticleJoins"/>
+		<where>
+			a.del_flag = "0"
+			<if test="title != null and title != ''">
+				AND a.title LIKE CONCAT('%', #{title}, '%')
+			</if>
+			<if test="posid != null and posid != ''">
+				AND a.posid LIKE CONCAT('%', #{posid}, '%')
+			</if>
+			<if test="category.id != null and category.id != ''">
+				AND (a.category_id = #{category.id}
+				<if test="category.parentIds != null and category.parentIds != ''">
+					or c.parent_ids like CONCAT('%,', #{category.id}, ',%')
+				</if>)
+			</if>
+			<if test="image != null and image != ''">
+				AND a.image  = #{image}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.weight DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Article">
+		SELECT 
+			<include refid="cmsArticleColumns"/>
+		FROM cms_article a
+		<include refid="cmsArticleJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.weight DESC, a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+
+	<select id="findByIdIn" resultType="Article">
+		SELECT 
+			<include refid="cmsArticleColumns"/>
+		from cms_article a where 
+		<where>
+			id in (${id});
+		</where>		
+	</select>
+ 
+
+	<select id="findStats" resultType="Category">
+		select max(c.id) AS "id",
+		       max(c.name) AS "name",
+		       max(cp.id) AS "parent.id",
+		       max(cp.name) AS "parent.name",
+		       count(*) AS "cnt",
+		       sum(a.hits) AS "hits",
+		       max(a.update_date) as "updateDate",
+		       max(o.id) AS "office.id",
+		       max(o.name) AS "office.name"
+		  FROM cms_article a
+		  RIGHT JOIN cms_category c ON c.id = a.category_id
+		  JOIN cms_category cp ON c.parent_id = cp.id
+		  JOIN sys_office o ON o.id = c.office_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL} 
+			AND c.site_id = #{site.id}
+			<if test="office.id != null and office.id != ''">
+				AND (c.office_id = #{office.id} OR o.parent_ids like CONCAT('%', #{office.id}, '%')
+			</if>
+			<if test="beginDate != null and beginDate != ''">
+				AND a.update_date <![CDATA[ >= #{beginDate} ]]>
+			</if>
+			<if test="endDate != null and endDate != ''">
+				AND a.update_date <![CDATA[ <= #{endDate} ]]>
+			</if>
+			<if test="id != null and id != ''">
+				AND (c.id = #{id} OR c.parent_ids LIKE CONCAT('%', #{id}, '%')
+			</if>
+			group by cp.sort, cp.id, c.sort, c.id
+			order by cp.sort, cp.id, c.sort, c.id
+		</where>		
+	</select>
+</mapper>

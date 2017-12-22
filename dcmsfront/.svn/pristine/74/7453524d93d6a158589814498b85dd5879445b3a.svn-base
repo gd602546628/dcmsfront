@@ -1,0 +1,24 @@
+var httpService = {
+    get: function (url, data) {
+        return $.ajax({
+            url: url,
+            type: 'json',
+            method: 'GET',
+            data: data
+        })
+    },
+    getCategorys: function (siteId, parentId) {
+        var pSiteId = siteId || 1
+        var pParentId = parentId || 1
+        return this.get(httpConfig.getCategorys, {siteId: pSiteId, parentId: pParentId})
+    },
+    getArticleList: function (data) {
+        return this.get(httpConfig.getArticleList, data)
+    },
+    getArticleData: function (data) {
+        return this.get(httpConfig.getArticleData, data)
+    },
+    getMedicalResource: function () {
+        return this.get(httpConfig.getMedicalResource)
+    }
+}

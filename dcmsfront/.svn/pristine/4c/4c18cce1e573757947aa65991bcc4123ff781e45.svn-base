@@ -1,0 +1,92 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2017/12/22/022
+  Time: 10:01
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@include file="../common.jsp" %>
+<html>
+<head>
+    <title>Title</title>
+    <script src="https://unpkg.com/mint-ui/lib/index.js"></script>
+</head>
+<body>
+<div class="dc-page article-list">
+    <div class="main">
+        <div class="weui-cells__title">{{title}}</div>
+        <div class="weui-cells"
+             v-infinite-scroll="loadMore"
+             infinite-scroll-disabled="loading"
+             infinite-scroll-distance="10"
+             infinite-scroll-immediate-check="false"
+        >
+            <a class="weui-cell weui-cell_access" :href="urlEncode(item)" v-for="item in articleList">
+                <div class="weui-cell__bd">
+                    <p>{{item.title}}</p>
+                </div>
+                <div class="weui-cell__ft">
+                </div>
+            </a>
+        </div>
+    </div>
+</div>
+<script>
+    (function () {
+        new Vue({
+            el: '.article-list',
+            data: function () {
+                return {
+                    title: '',
+                    articleList: [],
+                    id: Util.getQueryString('id'),
+                    loading: false,
+                    pageNum: 1,
+                    pageSize: 20
+                }
+            },
+            created: function () {
+                this.title = document.title = Util.getQueryString('name')
+                this.init()
+            },
+            methods: {
+                getArticleList: function () {
+                    var def = $.Deferred()
+                    var _this = this
+                    var params = {
+                        categoryId: this.id,
+                        pageNum: this.pageNum,
+                        pageSize: this.pageSize
+                    }
+                    httpService.getArticleList(params).then(function (data) {
+                        _this.loading = data.data.totalPage >= data.data.pageNo
+                        def.resolve(data.data.list)
+                    })
+                    return def.promise()
+                },
+                loadMore: function () {
+                    this.pageNum++
+                    var _this = this
+                    this.getArticleList().then(function (list) {
+                        _this.articleList = _this.articleList.concat(list)
+                    })
+                },
+                init: function () {
+                    var _this = this
+                    this.getArticleList().then(function (list) {
+                        _this.articleList = list
+                    })
+                },
+                urlEncode: function (item) {
+                    return Util.urlEncode('articleData', {
+                        id: item.id,
+                        name: item.title
+                    })
+                }
+            }
+        })
+    }())
+</script>
+</body>
+</html>
