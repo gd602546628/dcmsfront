@@ -26,4 +26,14 @@ public class frontRouteController {
     public String medicalResource() {
         return "medicalResource/medicalResource";
     }
+
+    @RequestMapping(value = "/appointment", method = RequestMethod.GET)
+    public String appointment() {
+        return "wxIndex/appointment";
+    }
+
+    @RequestMapping(value = "/couponList", method = RequestMethod.GET)
+    public String couponList() {
+        return "wxIndex/couponList";
+    }
 }
