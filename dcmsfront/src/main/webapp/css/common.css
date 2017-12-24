@@ -11,7 +11,7 @@
     -webkit-flex-direction: column;
     -ms-flex-direction: column;
     flex-direction: column;
-    background-color: #F6F5F5;
+    background-color: #f4f4f4;
     display: none;
 }
 
@@ -68,4 +68,14 @@
 
 .background-write {
     background: #ffffff;
+}
+
+.ellipsis {
+    white-space: normal;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.overflow-hidden {
+    overflow: hidden;
 }
