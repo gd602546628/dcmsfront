@@ -111,10 +111,12 @@
             },
             methods: {
                 urlEncode: function (item) {
-                    return Util.urlEncode('articleList', {
-                        id: item.id,
-                        name: item.name
-                    })
+                    if (item.module == 'article') {
+                        return Util.urlEncode('articleList', {
+                            id: item.id,
+                            name: item.name
+                        })
+                    }
                 }
             }
         })

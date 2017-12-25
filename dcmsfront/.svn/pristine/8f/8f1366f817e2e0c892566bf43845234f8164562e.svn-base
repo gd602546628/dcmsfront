@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kissdental.weixin.dao.MedicalCouponDao">
+    
+	<sql id="medicalCouponColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.type AS "type",
+		a.name AS "name",
+		a.image AS "image",
+		a.worth AS "worth",
+		a.total AS "total",
+		a.remain AS "remain",
+		a.start_time AS "startTime",
+		a.end_time AS "endTime",
+		a.premise AS "premise",
+		a.remarks AS "remarks",
+		a.discount AS "discount",
+		a.full_reduce As "fullReduce"
+	</sql>
+	
+	<sql id="medicalCouponJoins">
+	</sql>
+    
+	<select id="get" resultType="MedicalCoupon">
+		SELECT 
+			<include refid="medicalCouponColumns"/>
+		FROM medical_coupon a
+		<include refid="medicalCouponJoins"/>
+		WHERE a.code = #{code}
+	</select>
+	
+	<select id="findList" resultType="MedicalCoupon">
+		SELECT 
+			<include refid="medicalCouponColumns"/>
+		FROM medical_coupon a
+		<include refid="medicalCouponJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="name != null and name != ''">
+				AND a.name LIKE concat('%',#{name},'%')
+			</if>
+			<if test="startTime != null and startTime != ''">
+				AND a.start_time &gt;= #{startTime}
+			</if>
+			<if test="endTime != null and endTime != ''">
+				AND a.end_time &lt;= #{endTime}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="MedicalCoupon">
+		SELECT 
+			<include refid="medicalCouponColumns"/>
+		FROM medical_coupon a
+		<include refid="medicalCouponJoins"/>
+		<where>
+			a.del_flag = "0"
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findListForActivity" resultType="MedicalCoupon">
+		SELECT
+		<include refid="medicalCouponColumns"/>
+		FROM medical_coupon a
+		<include refid="medicalCouponJoins"/>
+		<where>
+			a.del_flag = "0"
+			AND a.start_time &lt; #{now}
+			AND a.end_time &gt; #{now}
+		</where>
+		<choose>
+			<when test="page !=null">
+				ORDER BY a.end_time ASC
+				limit #{page.start},#{page.pageSize}
+			</when>
+		</choose>
+	</select>
+
+	<update id="update">
+		UPDATE medical_coupon SET
+		remain = remain-1
+		WHERE code = #{code}
+	</update>
+
+</mapper>

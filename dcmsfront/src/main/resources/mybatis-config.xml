@@ -13,6 +13,8 @@
 		<typeAlias type="com.kissdental.weixin.entity.Site" alias="Site"/>
 		<typeAlias type="com.kissdental.weixin.entity.MedicalMaterial" alias="MedicalMaterial"/>
 		<typeAlias type="com.kissdental.weixin.entity.MedicalService" alias="MedicalService"/>
+		<typeAlias type="com.kissdental.weixin.entity.MedicalCoupon" alias="MedicalCoupon"/>
+		<typeAlias type="com.kissdental.weixin.entity.MedicalCouponCustomer" alias="MedicalCouponCustomer"/>
 	</typeAliases>
 
 </configuration>

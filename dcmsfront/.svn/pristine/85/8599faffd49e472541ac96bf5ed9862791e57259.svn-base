@@ -1,0 +1,207 @@
+/**
+ * Copyright &copy; 2012-2016 <a href="http://www.jointem.com">Jointem</a> All rights reserved.
+ */
+package com.kissdental.weixin.common;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import org.apache.commons.lang3.StringUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+/**
+ * @author Dartagnan
+ * @param <T>
+ */
+public class Page<T> {
+	
+	private int pageNo = 1; // 当前页码
+	private int pageSize = 20; // 页面大小，设置为“-1”表示不进行分页（分页无效）
+
+	private boolean firstPage;//是否是第一页
+	private boolean lastPage;//是否是最后一页
+
+	private List<T> list = new ArrayList<T>();
+	
+	private String orderBy = ""; // 标准查询有效， 实例： updatedate desc, name asc
+
+	private int start;
+	public Page() {
+		this.pageSize = -1;
+	}
+
+	/**
+	 * 构造方法
+	 * @param request 传递 repage 参数，来记住页码
+	 * @param response 用于设置 Cookie，记住页码
+	 */
+	public Page(HttpServletRequest request, HttpServletResponse response){
+		this(request, response, -2);
+	}
+
+	/**
+	 * 构造方法
+	 * @param request 传递 repage 参数，来记住页码
+	 * @param response 用于设置 Cookie，记住页码
+	 * @param defaultPageSize 默认分页大小，如果传递 -1 则为不分页，返回所有数据
+	 */
+	public Page(HttpServletRequest request, HttpServletResponse response, int defaultPageSize){
+		// 设置页码参数（传递repage参数，来记住页码）
+		String no = request.getParameter("pageNo");
+
+		if (StringUtils.isNumeric(no)){
+			this.setPageNo(Integer.parseInt(no));
+		}else if(request.getAttribute("pageNo")!=null){
+			no = String.valueOf(request.getAttribute("pageNo")) ;
+			if (StringUtils.isNumeric(no)){
+				this.setPageNo(Integer.parseInt(no));
+			}
+		}
+		// 设置页面大小参数（传递repage参数，来记住页码大小）
+		String size = request.getParameter("pageSize");
+		if (StringUtils.isNumeric(size)){
+			this.setPageSize(Integer.parseInt(size));
+		}else if(request.getAttribute("pageSize")!=null){
+			size = String.valueOf(request.getAttribute("pageSize"));
+			if (StringUtils.isNumeric(size)){
+				this.setPageSize(Integer.parseInt(size));
+			}
+		}else if (defaultPageSize != -2){
+			this.pageSize = defaultPageSize;
+		}
+		// 设置排序参数
+		String orderBy = request.getParameter("orderBy");
+		if (StringUtils.isNotBlank(orderBy)){
+			this.setOrderBy(orderBy);
+		}
+		setStart((pageNo-1)*pageSize);
+	}
+	/**
+	 * 获取当前页码
+	 * @return
+	 */
+	public int getPageNo() {
+		return pageNo;
+	}
+	
+	/**
+	 * 设置当前页码
+	 * @param pageNo
+	 */
+	public void setPageNo(int pageNo) {
+		this.pageNo = pageNo;
+	}
+	
+	/**
+	 * 获取页面大小
+	 * @return
+	 */
+	public int getPageSize() {
+		return pageSize;
+	}
+
+	/**
+	 * 设置页面大小（最大500）
+	 * @param pageSize
+	 */
+	public void setPageSize(int pageSize) {
+		this.pageSize = pageSize <= 0 ? 10 : pageSize;// > 500 ? 500 : pageSize;
+	}
+
+
+	/**
+	 * 是否为第一页
+	 * @return
+	 */
+	@JsonIgnore
+	public boolean isFirstPage() {
+		return firstPage;
+	}
+
+	/**
+	 * 是否为最后一页
+	 * @return
+	 */
+	@JsonIgnore
+	public boolean isLastPage() {
+		return lastPage;
+	}
+	
+	/**
+	 * 上一页索引值
+	 * @return
+	 */
+	@JsonIgnore
+	public int getPrev() {
+		if (isFirstPage()) {
+			return pageNo;
+		} else {
+			return pageNo - 1;
+		}
+	}
+
+	/**
+	 * 下一页索引值
+	 * @return
+	 */
+	@JsonIgnore
+	public int getNext() {
+		if (isLastPage()) {
+			return pageNo;
+		} else {
+			return pageNo + 1;
+		}
+	}
+	
+	/**
+	 * 获取本页数据对象列表
+	 * @return List<T>
+	 */
+	public List<T> getList() {
+		return list;
+	}
+
+	/**
+	 * 设置本页数据对象列表
+	 * @param list
+	 */
+	public Page<T> setList(List<T> list) {
+		this.list = list;
+		return this;
+	}
+
+	/**
+	 * 获取查询排序字符串
+	 * @return
+	 */
+	@JsonIgnore
+	public String getOrderBy() {
+		// SQL过滤，防止注入 
+		String reg = "(?:')|(?:--)|(/\\*(?:.|[\\n\\r])*?\\*/)|"
+					+ "(\\b(select|update|and|or|delete|insert|trancate|char|into|substr|ascii|declare|exec|count|master|into|drop|execute)\\b)";
+		Pattern sqlPattern = Pattern.compile(reg, Pattern.CASE_INSENSITIVE);
+		if (sqlPattern.matcher(orderBy).find()) {
+			return "";
+		}
+		return orderBy;
+	}
+
+	/**
+	 * 设置查询排序，标准查询有效， 实例： updatedate desc, name asc
+	 */
+	public void setOrderBy(String orderBy) {
+		this.orderBy = orderBy;
+	}
+
+
+	public int getStart() {
+		return start;
+	}
+
+	public void setStart(int start) {
+		this.start = start;
+	}
+}

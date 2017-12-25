@@ -44,25 +44,42 @@
 </head>
 <body>
 <div class="dc-page wx-appointment">
-    <div class="main">
+    <div class="main" v-if="officeInfo">
         <div class="banner">
         </div>
         <div class="weui-cells">
-            <div class="weui-cell" v-for="item in info">
+            <div class="weui-cell">
                 <div class="weui-cell__bd">
-                    <p>{{item.title}}</p>
+                    <p>诊所名称</p>
                 </div>
-                <div class="weui-cell__ft">{{item.value}}</div>
+                <div class="weui-cell__ft">{{officeInfo.name}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所地址</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.area}} {{officeInfo.address}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所邮箱</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.email}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所电话</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.phone}}</div>
             </div>
         </div>
         <div class="weui-media-box weui-media-box_text">
             <h4 class="weui-media-box__title">诊所简介</h4>
-            <p class="weui-media-box__desc">
-                诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介诊所简介</p>
+            <p class="weui-media-box__desc"></p>
         </div>
     </div>
     <div class="footer flex">
-        <a href="tel:13000000000" class="flex-1 flex flex-align-center flex-pack-center btn1">电话预约</a>
+        <a :href="telFormat" class="flex-1 flex flex-align-center flex-pack-center btn1">电话预约</a>
         <a href="javascript:;" class="flex-1 flex flex-align-center flex-pack-center btn2">诊所导航</a>
     </div>
 </div>
@@ -72,30 +89,21 @@
             el: '.wx-appointment',
             data: function () {
                 return {
-                    info: [
-                        {
-                            title: '诊所名称',
-                            value: '亲亲口腔诊所'
-                        },
-                        {
-                            title: '诊所地址',
-                            value: '地球'
-                        },
-                        {
-                            title: '联系人',
-                            value: '韩梅梅'
-                        },
-                        {
-                            title: '电话',
-                            value: '13000000000'
-                        },
-                        {
-                            title: '营业时间',
-                            value: '08:00 -- 21:00'
-                        }
-                    ]
+                    officeInfo: {}
                 }
-            }
+            },
+            created: function () {
+                var _this = this
+                httpService.getOffice().then(function (data) {
+                    _this.officeInfo = data.data
+                })
+            },
+            computed: {
+                telFormat: function () {
+                    return 'tel:' + this.officeInfo.phone
+                }
+            },
+            methods: {}
         })
     }())
 </script>
