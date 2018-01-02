@@ -1,0 +1,111 @@
+<%--
+  Created by IntelliJ IDEA.
+  User: Administrator
+  Date: 2017/12/23/023
+  Time: 11:11
+  To change this template use File | Settings | File Templates.
+--%>
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
+<%@include file="../common.jsp" %>
+<html>
+<head>
+    <title>在线预约</title>
+    <style>
+        .wx-appointment .banner {
+            background-image: url("${pageContext.request.contextPath}/images/banner.jpg");
+            background-position: center;
+            background-size: 100% 100%;
+            background-repeat: no-repeat;
+            height: 150px;
+        }
+
+        .wx-appointment .weui-media-box {
+            margin-top: 10px;
+            background: #ffffff;
+        }
+
+        .wx-appointment .weui-media-box .weui-media-box__desc {
+            display: block;
+            letter-spacing: 2px
+        }
+
+        .wx-appointment .footer .btn1 {
+            height: 40px;
+            background: #1AAD19;
+            color: #ffffff;
+        }
+
+        .wx-appointment .footer .btn2 {
+            height: 40px;
+            background: #0164a6;
+            color: #ffffff;
+        }
+    </style>
+</head>
+<body>
+<div class="dc-page wx-appointment">
+    <div class="main" v-if="officeInfo">
+        <div class="banner">
+        </div>
+        <div class="weui-cells">
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所名称</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.name}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所地址</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.area}} {{officeInfo.address}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所邮箱</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.email}}</div>
+            </div>
+            <div class="weui-cell">
+                <div class="weui-cell__bd">
+                    <p>诊所电话</p>
+                </div>
+                <div class="weui-cell__ft">{{officeInfo.phone}}</div>
+            </div>
+        </div>
+        <div class="weui-media-box weui-media-box_text">
+            <h4 class="weui-media-box__title">诊所简介</h4>
+            <p class="weui-media-box__desc"></p>
+        </div>
+    </div>
+    <div class="footer flex">
+        <a :href="telFormat" class="flex-1 flex flex-align-center flex-pack-center btn1">电话预约</a>
+        <a href="javascript:;" class="flex-1 flex flex-align-center flex-pack-center btn2">诊所导航</a>
+    </div>
+</div>
+<script>
+    (function () {
+        new Vue({
+            el: '.wx-appointment',
+            data: function () {
+                return {
+                    officeInfo: {}
+                }
+            },
+            created: function () {
+                var _this = this
+                httpService.getOffice().then(function (data) {
+                    _this.officeInfo = data.data
+                })
+            },
+            computed: {
+                telFormat: function () {
+                    return 'tel:' + this.officeInfo.phone
+                }
+            },
+            methods: {}
+        })
+    }())
+</script>
+</body>
+</html>

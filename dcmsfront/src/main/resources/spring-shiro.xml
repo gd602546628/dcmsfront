@@ -24,9 +24,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     <!-- 此bean要被web.xml引用,和web.xml中的filtername同名 -->
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
-        <property name="loginUrl" value="/welcome/index" /> <!-- 没有认证返回地址 -->
+        <property name="loginUrl" value="/weixin/login.do" /> <!-- 没有认证返回地址 -->
         <property name="successUrl" value="/hrm/welcome/manage" />
-        <property name="unauthorizedUrl" value="/index2.jsp" /> <!-- 没有授权返回地址 -->
         <!--自定义的filter-->
         <property name="filters">
             <map>
@@ -38,7 +37,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
             <value>            <!-- **代表任意子目录 -->
                 /cms/** =anon
                 /office/** = anon
-                /customer/** = anon
+                /front/** = anon
+                /customer/** =authc,roles[user]
                 /manage/** = authc,roles[user]
                 <!--/customer/** = authc,roles[user]-->
                 <!--/office/** = authc,roles[user]-->
