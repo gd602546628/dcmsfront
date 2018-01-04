@@ -46,4 +46,9 @@ public class frontRouteController {
     public String personalInfo() {
         return "wxIndex/personalInfo";
     }
+
+    @RequestMapping(value = "/userInfo", method = RequestMethod.GET)
+    public String userInfo() {
+        return "userInfo/userInfo";
+    }
 }
