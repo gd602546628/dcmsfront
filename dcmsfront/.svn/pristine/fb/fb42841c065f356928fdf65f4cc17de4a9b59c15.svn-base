@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,height=device-height,initial-scale=1, maximum-scale=1.0, user-scalable=no">
+    <title>亲亲口腔诊所</title>
+    <style>
+        /**重置标签默认样式*/
+        body,html{
+            width:100%;
+            height:100%;
+            margin:0;
+            padding:0;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            font-family: '微软雅黑'
+        }
+        #container {
+            /*width: 450px;*/
+            /*height: 780px;*/
+            width: 100%;
+            height: 90%;
+            background: #eee;
+            /*margin: 80px auto 0;*/
+            position: relative;
+            /*box-shadow: 20px 20px 55px #777;*/
+        }
+        .header {
+            background: #000;
+            height: 40px;
+            color: #fff;
+            line-height: 34px;
+            font-size: 20px;
+            padding: 0 10px;
+        }
+        .footer {
+            width: 100%;
+            height: 10%;
+            min-height: 10px;
+            background: #666;
+            position: absolute;
+            bottom: 0;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+        }
+        .footer input {
+            /*width: 275px;*/
+            height: 45px;
+            outline: none;
+            font-size: 20px;
+            text-indent: 10px;
+            border-radius: 6px;
+            -webkit-box-flex: 1;
+            -webkit-flex: 1;
+            -ms-flex: 1;
+            flex: 1;
+        }
+        .footer span {
+            width: 62px;
+            height: 48px;
+            background: #ccc;
+            font-weight: 900;
+            line-height: 45px;
+            cursor: pointer;
+            text-align: center;
+            border-radius: 6px;
+        }
+        .footer span:hover {
+            color: #fff;
+            background: #999;
+        }
+        #user_face_icon {
+            background: red;
+            width: 40px;
+            height: 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .content {
+            font-size: 20px;
+            /*width: 435px;*/
+            height: 90%;
+            overflow: auto;
+            padding: 5px;
+        }
+        .content li {
+            margin-top: 10px;
+            padding-left: 10px;
+            /*width: 412px;*/
+            width: calc(100% - 10px);
+            display: block;
+            clear: both;
+            overflow: hidden;
+        }
+        .content li img {
+            float: left;
+        }
+        .content li span{
+            background: #7cfc00;
+            padding: 10px;
+            border-radius: 10px;
+            float: left;
+            margin: 6px 10px 0 10px;
+            /*max-width: 310px;*/
+            /*width: calc(100% - 100px);*/
+            border: 1px solid #ccc;
+            box-shadow: 0 0 3px #ccc;
+            word-break:break-all;
+        }
+        .content li img {
+            width: 40px;
+            border-radius:50%;
+        }
+        .content li img.imgleft {
+            float: left;
+        }
+        .content li img.imgright {
+            float: right;
+            margin-right: 15px;
+        }
+        .content li span.spanleft {
+            float: left;
+            background: #fff;
+        }
+        .content li span.spanright {
+            float: right;
+            background: #7cfc00;
+        }
+    </style>
+    <script>
+        window.onload = function(){
+            var websocket = null;
+            getConnection();
+            var arrIcon = ['/dcmsfront/images/client.jpg','/dcmsfront/images/kisskiss.jpg'];
+            var num = 0;     //控制头像改变
+            var iNow = -1;    //用来累加改变左右浮动
+            var icon = document.getElementById('user_face_icon').getElementsByTagName('img');
+            var btn = document.getElementById('btn');
+            var text = document.getElementById('text');
+            var content = document.getElementsByTagName('ul')[0];
+            var img = content.getElementsByTagName('img');
+            var span = content.getElementsByTagName('span');
+
+
+            btn.onclick = function(){
+                    if(text.value ==''){
+                        alert('不能发送空消息');
+                    }else {
+
+                        send(text.value);
+//
+                        content.innerHTML += '<li><img src="'+arrIcon[0]+'"><span>'+text.value+'</span></li>';
+                        iNow++;
+                        img[iNow].className += 'imgright';
+                            span[iNow].className += 'spanright';
+//                        if(num==0){
+//                            img[iNow].className += 'imgright';
+//                            span[iNow].className += 'spanright';
+//                        }else {
+//                            img[iNow].className += 'imgleft';
+//                            span[iNow].className += 'spanleft';
+//                        }
+                        text.value = '';
+//                        // 内容过多时,将滚动条放置到最底端
+                        content.scrollTop=content.scrollHeight;
+                    }
+                }
+
+
+
+            //判断当前浏览器是否支持WebSocket
+
+
+            function getConnection() {
+                if ('WebSocket' in window) {
+                    var url = "ws://39.108.178.178:8091/dcms/websocket/admin/2";
+//                    var url = "ws://192.168.2.117:9091/dcms/websocket/admin/2"
+//                    var url = "ws://192.168.1.104:9091/dcms/websocket/admin/2";
+//                    alert(url);
+                    websocket = new WebSocket(url);
+                }
+                else {
+                    alert('当前浏览器 Not support websocket')
+                }
+                //连接发生错误的回调方法
+                websocket.onerror = function () {
+                    setMessageInnerHTML("WebSocket连接发生错误");
+                };
+
+                //连接成功建立的回调方法
+                websocket.onopen = function () {
+                    setMessageInnerHTML("WebSocket连接成功");
+                }
+
+                //接收到消息的回调方法
+                websocket.onmessage = function (event) {
+                    var result = JSON.parse(event.data);
+                       var userName = result.userName;
+                        if(userName=='admin'){
+                            this.src = arrIcon[1];
+                            num = 1;
+                        }else {
+                            this.src = arrIcon[0];
+                            num = 0;
+                        }
+                    content.innerHTML += '<li><img src="'+arrIcon[num]+'"><span>'+result.mesg+'</span></li>';
+                    content.scrollTop=content.scrollHeight;
+                    iNow++;
+                        if(num==0){
+                            img[iNow].className += 'imgright';
+                            span[iNow].className += 'spanright';
+                        }else {
+                            img[iNow].className += 'imgleft';
+                            span[iNow].className += 'spanleft';
+                        }
+                    text.value='';
+                }
+
+                //连接关闭的回调方法
+                websocket.onclose = function () {
+                    setMessageInnerHTML("WebSocket连接关闭");
+                }
+            }
+
+
+
+            //监听窗口关闭事件，当窗口关闭时，主动去关闭websocket连接，防止连接还没断开就关闭窗口，server端会抛异常。
+            window.onbeforeunload = function () {
+                closeWebSocket();
+            }
+
+            //将消息显示在网页上
+            function setMessageInnerHTML(innerHTML) {
+//                document.getElementById('message').innerHTML += innerHTML + '<br/>';
+            }
+
+            //关闭WebSocket连接
+            function closeWebSocket() {
+                websocket.close();
+            }
+
+            //发送消息
+            function send(message) {
+//                var message = document.getElementById('text').value;
+                websocket.send(message);
+
+            }
+            //实时显示当前时间
+            var show = document.getElementById("show");
+            setInterval(function() {
+                var time = new Date();
+                // 程序计时的月从0开始取值后+1
+                var m = time.getMonth() + 1;
+                var t =  time.getHours() + ":"
+                    + time.getMinutes() + ":" + time.getSeconds();
+//                var t = time.getFullYear() + "-" + m + "-"
+//                    + time.getDate() + " " + time.getHours() + ":"
+//                    + time.getMinutes() + ":" + time.getSeconds();
+                show.innerHTML = t;
+            }, 1000);
+
+        }
+
+
+
+    </script>
+</head>
+<body>
+    <div id="container">
+        <div class="header">
+            <span style="float: left;">亲亲口腔在线咨询</span>
+            <span style="float: right;"><div id="show"></div></span>
+        </div>
+        <ul class="content">
+		</ul>
+
+    </div>
+    <div class="footer">
+        <div id="user_face_icon">
+            <img src="/dcmsfront/images/client.jpg" alt="">
+        </div>
+        <input id="text" type="text" placeholder="说点什么吧...">
+        <span id="btn">发送</span>
+    </div>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kissdental.weixin.dao.CustomerDao">
+    
+	<sql id="customerColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.name AS "name",
+		a.sex AS "sex",
+		a.birthday AS "birthday",
+		a.phone AS "phone",
+		a.password AS "password",
+		a.nationality AS "nationality",
+		a.tel AS "tel",
+		a.photo AS "photo",
+		a.address AS "address",
+		a.work AS "work",
+		a.work_occupation AS "workOccupation",
+		a.work_phone AS "workPhone",
+		a.fax AS "fax",
+		a.email AS "email",
+		a.is_adult AS "isAdult",
+		a.source AS "source",
+		a.recommender_id AS "recommender.id",
+		a.del_flag AS "delFlag"
+	</sql>
+	
+	<sql id="customerJoins">
+	</sql>
+    
+	<select id="get" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM medical_customer a
+		<include refid="customerJoins"/>
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="getCustomerByPhone" resultType="Customer">
+		SELECT
+		<include refid="customerColumns"/>
+		FROM medical_customer a
+		WHERE a.phone = #{phone}
+
+	</select>
+	
+	<select id="findList" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM medical_customer a
+		<include refid="customerJoins"/>
+		<where>
+			a.del_flag = '0'
+			<if test="name != null and name != ''">
+				AND a.name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{name}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{name}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{name},'%')</if>
+			</if>
+			<if test="phone != null and phone != ''">
+				AND a.phone = #{phone}
+			</if>
+			<if test="source != null and source != ''">
+				AND a.source LIKE 
+					<if test="dbName == 'oracle'">'%'||#{source}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{source}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{source},'%')</if>
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.create_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Customer">
+		SELECT 
+			<include refid="customerColumns"/>
+		FROM medical_customer a
+		<include refid="customerJoins"/>
+		<where>
+			a.del_flag = '0'
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="checkPhoneNumbers" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM  medical_customer a WHERE a.phone = #{phone}
+	</select>
+	
+	<insert id="save">
+		INSERT INTO medical_customer(
+			id,
+			code,
+			name,
+			sex,
+			birthday,
+			phone,
+			password,
+			nationality,
+			tel,
+			photo,
+			address,
+			work,
+			work_occupation,
+			work_phone,
+			fax,
+			email,
+			is_adult,
+			source,
+			recommender_id,
+			create_date,
+			del_flag
+		) VALUES (
+			#{id},
+			#{code},
+			#{name},
+			#{sex},
+			#{birthday},
+			#{phone},
+			#{password},
+			#{nationality},
+			#{tel},
+			#{photo},
+			#{address},
+			#{work},
+			#{workOccupation},
+			#{workPhone},
+			#{fax},
+			#{email},
+			#{isAdult},
+			#{source},
+			#{recommender.id},
+			#{createDate},
+			'0'
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE medical_customer SET 	
+			name = #{name},
+			phone = #{phone},
+			password = #{password}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE medical_customer SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>

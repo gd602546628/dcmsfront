@@ -1,0 +1,78 @@
+package com.kissdental.weixin.controller;
+
+import com.kissdental.weixin.common.ApiResult;
+import com.kissdental.weixin.common.RandomUtil;
+import com.kissdental.weixin.entity.Customer;
+import com.kissdental.weixin.service.CustomerService;
+import com.kissdental.weixin.utils.HttpRequest;
+import com.kissdental.weixin.utils.ReadPropertesUtil;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+/**
+ * Created by dartagnan on 2018/1/5.
+ */
+@Controller
+@RequestMapping("/reg")
+public class RegisterController {
+    @Autowired
+    private CustomerService customerService;
+
+    @ResponseBody
+    @RequestMapping(value="/register")
+    public ApiResult customerRegister(Customer customer, String regCode,HttpServletResponse response,HttpSession session){
+        ApiResult result = new ApiResult(response);
+        String phone = customer.getPhone();
+        if(customerService.checkPhoneNumbers(phone)){
+            String valicode = (String)session.getAttribute(phone);
+            if(StringUtils.isNotEmpty(valicode)&&valicode.equals(regCode)){
+                try {
+                    customerService.register(customer);
+                    result.setCode(ApiResult.CODE_SUCCESS);
+                    result.setMesg("注册成功");
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    result.setCode(ApiResult.CODE_FAILURE);
+                    result.setMesg("注册失败");
+                }
+            }else {
+                result.setCode(ApiResult.CODE_FAILURE);
+                result.setMesg("验证码错误，注册失败");
+            }
+        }else{
+            result.setCode(ApiResult.CODE_NUMBER_ALREADY_EXISTS);
+            result.setMesg("号码已存在");
+        }
+        return result;
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/sendCode")
+    public ApiResult sendCode(String phoneNumbers,HttpServletResponse response, HttpSession session){
+        ApiResult result = new ApiResult(response);
+        String code = RandomUtil.generateOnlyNumber(6);
+        session.setAttribute(phoneNumbers,code);
+        try {
+            String sr= HttpRequest.sendPost(ReadPropertesUtil.getValue("smsServiceUrl"), "phoneNumbers="+phoneNumbers+"&code="+code);
+
+            if(StringUtils.isNotEmpty(sr)&&sr.contains("000000")){
+                result.setCode(ApiResult.CODE_SUCCESS);
+                result.setMesg("发送成功");
+                result.setData(sr);
+            }else {
+                result.setCode(ApiResult.CODE_FAILURE);
+                result.setMesg("发送失败");
+            }
+        } catch (Exception e) {
+            result.setMesg("发送失败");
+            result.setCode(ApiResult.CODE_FAILURE);
+        }
+        return result;
+    }
+}

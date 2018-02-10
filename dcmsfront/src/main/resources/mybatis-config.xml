@@ -16,6 +16,9 @@
 		<typeAlias type="com.kissdental.weixin.entity.MedicalCoupon" alias="MedicalCoupon"/>
 		<typeAlias type="com.kissdental.weixin.entity.MedicalCouponCustomer" alias="MedicalCouponCustomer"/>
 		<typeAlias type="com.kissdental.weixin.entity.Link" alias="Link"/>
+		<typeAlias type="com.kissdental.weixin.entity.Diagnosis" alias="Diagnosis"/>
+		<typeAlias type="com.kissdental.weixin.entity.DiagnosisPay" alias="DiagnosisPay"/>
+		<typeAlias type="com.kissdental.weixin.entity.DiagnosisResult" alias="DiagnosisResult"/>
 	</typeAliases>
 
 </configuration>

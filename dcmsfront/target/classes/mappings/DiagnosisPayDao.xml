@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kissdental.weixin.dao.DiagnosisPayDao">
+    
+	<sql id="diagnosisPayColumns">
+		a.id AS "id",
+		a.pay AS "pay",
+		a.pay_type AS "payType",
+		a.create_date AS "payDate",
+		ms.name AS "schemeName"
+	</sql>
+	
+	<sql id="diagnosisPayJoins">
+		LEFT JOIN medical_diagnosis md on a.diagnosis_id = md.id
+		LEFT JOIN medical_scheme ms on md.scheme_id = ms.id
+	</sql>
+    
+	<select id="get" resultType="DiagnosisPay">
+		SELECT 
+			<include refid="diagnosisPayColumns"/>
+		FROM medical_diagnosis_pay a
+		<include refid="diagnosisPayJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DiagnosisPay">
+		SELECT 
+			<include refid="diagnosisPayColumns"/>
+		FROM medical_diagnosis_pay a
+		<include refid="diagnosisPayJoins"/>
+		<where>
+			md.customer_id = #{customerId}
+		</where>
+				ORDER BY a.update_date DESC
+				limit ${page.start},${page.pageSize}
+	</select>
+	
+	<select id="count" resultType="java.lang.Integer">
+		SELECT 
+			count(*)
+		FROM medical_diagnosis_pay a
+		<include refid="diagnosisPayJoins"/>
+		<where>
+			md.customer_id = #{customerId}
+		</where>		
+	</select>
+	
+</mapper>

@@ -3,8 +3,7 @@
 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd"
-       default-lazy-init="true"> 
-
+       default-lazy-init="true">
     <!-- 安全管理 -->
     <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
         <!-- Single realm app.  If you have multiple realms, use the 'realms' property instead. -->
@@ -25,7 +24,6 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
         <property name="loginUrl" value="/weixin/login.do" /> <!-- 没有认证返回地址 -->
-        <property name="successUrl" value="/hrm/welcome/manage" />
         <!--自定义的filter-->
         <property name="filters">
             <map>
@@ -38,8 +36,8 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                 /cms/** =anon
                 /office/** = anon
                 /front/** = anon
+                /reg/** = anon
                 /customer/** =authc,roles[user]
-                /manage/** = authc,roles[user]
                 <!--/customer/** = authc,roles[user]-->
                 <!--/office/** = authc,roles[user]-->
                 /logout=logout
@@ -49,7 +47,7 @@ xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 
     <!--自定义LogoutFilter,退出-->
     <bean id="logoutFilter" class="com.kissdental.weixin.filter.SystemLogoutFilter">
-        <property name="redirectUrl" value="/welcome/index"/>
+        <property name="redirectUrl" value="/weixin/login.do"/>
     </bean>
 
     <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->

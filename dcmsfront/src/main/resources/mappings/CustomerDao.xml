@@ -22,7 +22,9 @@
 		a.is_adult AS "isAdult",
 		a.source AS "source",
 		a.recommender_id AS "recommender.id",
-		a.del_flag AS "delFlag"
+		a.del_flag AS "delFlag",
+		a.referrer_qrcode AS "referrerQrcode",
+		a.outpatient_qrcode AS "outpatientQrcode"
 	</sql>
 	
 	<sql id="customerJoins">
@@ -93,8 +95,12 @@
 			</otherwise>
 		</choose>
 	</select>
+
+	<select id="checkPhoneNumbers" resultType="java.lang.Integer">
+		SELECT COUNT(*) FROM  medical_customer a WHERE a.phone = #{phone}
+	</select>
 	
-	<insert id="insert">
+	<insert id="save">
 		INSERT INTO medical_customer(
 			id,
 			code,
@@ -115,12 +121,9 @@
 			is_adult,
 			source,
 			recommender_id,
-			remarks,
-			create_by,
 			create_date,
-			update_by,
-			update_date,
-			del_flag
+			del_flag,
+			referrer_code
 		) VALUES (
 			#{id},
 			#{code},
@@ -141,36 +144,17 @@
 			#{isAdult},
 			#{source},
 			#{recommender.id},
-			#{remarks},
-			#{createBy.id},
 			#{createDate},
-			#{updateBy.id},
-			#{updateDate},
-			#{delFlag}
+			'0',
+			#{referrerCode}
 		)
 	</insert>
 	
 	<update id="update">
 		UPDATE medical_customer SET 	
-			code = #{code},
 			name = #{name},
-			sex = #{sex},
-			birthday = #{birthday},
 			phone = #{phone},
-			password = #{password},
-			nationality = #{nationality},
-			tel = #{tel},
-			photo = #{photo},
-			address = #{address},
-			work = #{work},
-			work_occupation = #{workOccupation},
-			work_phone = #{workPhone},
-			fax = #{fax},
-			email = #{email},
-			is_adult = #{isAdult},
-			source = #{source},
-			recommender_id = #{recommender.id},
-			remarks = #{remarks}
+			password = #{password}
 		WHERE id = #{id}
 	</update>
 	

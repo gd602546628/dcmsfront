@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.kissdental.weixin.dao.DiagnosisResultDao">
+    
+	<sql id="diagnosisResultColumns">
+		a.id AS "id",
+		a.name AS "name",
+		a.diagnosis_id AS "diagnosis.id",
+		a.template_id AS "template.id",
+		a.content AS "content",
+		a.del_flag AS "delFlag",
+		a.create_date AS "createDate"
+	</sql>
+	
+	<sql id="diagnosisResultJoins">
+		LEFT JOIN medical_diagnosis md on a.diagnosis_id = md.id
+	</sql>
+    
+	<select id="get" resultType="DiagnosisResult">
+		SELECT 
+			<include refid="diagnosisResultColumns"/>
+		FROM medical_diagnosis_result a
+		<include refid="diagnosisResultJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="DiagnosisResult">
+		SELECT 
+			<include refid="diagnosisResultColumns"/>
+		FROM medical_diagnosis_result a
+		<include refid="diagnosisResultJoins"/>
+		<where>
+			a.del_flag = '0'
+			AND md.customer_id = #{customerId}
+		</where>
+				ORDER BY a.update_date DESC
+				limit ${page.start},${page.pageSize}
+	</select>
+	
+	<select id="count" resultType="java.lang.Integer">
+		SELECT
+			count(*)
+ 		FROM medical_diagnosis_result a
+		<include refid="diagnosisResultJoins"/>
+		<where>
+			a.del_flag = '0'
+			AND md.customer_id = #{customerId}
+		</where>
+
+	</select>
+
+</mapper>

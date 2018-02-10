@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ylt.modules.diagnosis.dao.DiagnosisDao">
+    
+	<sql id="diagnosisColumns">
+		a.id AS "id",
+		a.customer_id AS "customer.id",
+		a.health_result_id AS "healthResult.id",
+		a.dental_result_id AS "dentalResult.id",
+		a.consentl_result_id AS "consentlResult.id",
+		a.record_result_id AS "recordResult.id",
+		a.completion_result_id AS "completionResult.id",
+		a.scheme_id AS "scheme.id",
+		a.price AS "price",
+		a.vip_id AS "vip.id",
+		a.vip_ratio AS "vipRatio",
+		a.vip_price AS "vipPrice",
+		a.discount_id AS "discount.id",
+		a.discount_ratio AS "discountRatio",
+		a.discount_price AS "discountPrice",
+		a.score_deduction AS "scoreDeduction",
+		a.score_price AS "scorePrice",
+		a.coupon_code AS "couponCode",
+		a.coupon_price AS "couponPrice",
+		a.final_price AS "finalPrice",
+		a.already_pay AS "alreadyPay",
+		a.left_pay AS "leftPay",
+		a.status AS "status",
+		a.del_flag AS "delFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		c1.name AS "customer.name",
+		c1.sex AS "customer.sex",
+		c1.birthday AS "customer.birthday",
+		c1.phone AS "customer.phone",
+		r1.name AS "healthResult.name",
+		r1.content AS "healthResult.content",
+		r2.name AS "dentalResult.name",
+		r2.content AS "dentalResult.content",
+		r3.name AS "consentlResult.name",
+		r3.content AS "consentlResult.content",
+		r4.name AS "recordResult.name",
+		r4.content AS "recordResult.content",
+		r5.name AS "completionResult.name",
+		r5.content AS "completionResult.content",
+		u1.name AS "createBy.name",
+		u3.name AS "updateBy.name",
+		s1.name AS "scheme.name",
+		s1.total_price AS "scheme.totalPrice",
+		a.handle_user_id AS "handleUser.id",
+		u2.name AS "handleUser.name",
+		a.handle_office_id AS "handleOffice.id",
+		o1.name AS "handleOffice.name",
+		ra1.id AS "customerAccount.id",
+		ra1.spend AS "customerAccount.spend",
+		ra1.balance AS "customerAccount.balance"
+	</sql>
+
+	<sql id="diagnosisJoins">
+		LEFT JOIN medical_customer c1 ON c1.id = a.customer_id
+		LEFT JOIN medical_diagnosis_result r1 ON r1.id = a.health_result_id
+		LEFT JOIN medical_diagnosis_result r2 ON r2.id = a.dental_result_id
+		LEFT JOIN medical_diagnosis_result r3 ON r3.id = a.consentl_result_id
+		LEFT JOIN medical_diagnosis_result r4 ON r4.id = a.record_result_id
+		LEFT JOIN medical_diagnosis_result r5 ON r5.id = a.completion_result_id
+		LEFT JOIN medical_scheme s1 ON s1.id = a.scheme_id
+		LEFT JOIN sys_user u1 ON u1.id = a.create_by
+		LEFT JOIN sys_user u3 ON u3.id = a.update_by
+		LEFT JOIN sys_user u2 ON u2.id = a.handle_user_id
+		LEFT JOIN sys_office o1 ON o1.id = a.handle_office_id
+		LEFT JOIN medical_customer_account ra1 ON ra1.customer_id = a.customer_id
+	</sql>
+
+	<select id="get" resultType="Diagnosis">
+		SELECT 
+			<include refid="diagnosisColumns"/>
+		FROM medical_diagnosis a
+		<include refid="diagnosisJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="Diagnosis">
+		SELECT 
+			<include refid="diagnosisColumns"/>
+		FROM medical_diagnosis a
+		<include refid="diagnosisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customer != null and customer.id != null and customer.id != ''">
+				AND a.customer_id = #{customer.id}
+			</if>
+			<if test="customer != null and customer.name != null and customer.name != ''">
+				AND c1.name like concat('%',#{customer.name},'%')
+			</if>
+			<if test="scheme != null and scheme.id != null and scheme.id != ''">
+				AND a.scheme_id = #{scheme.id}
+			</if>
+			<if test="updateBy != null and updateBy.id != null and updateBy.id != ''">
+				AND a.update_by = #{updateBy.id}
+			</if>
+			<if test="price != null and price != ''">
+				AND a.price = #{price}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="accountCheck" resultType="Diagnosis">
+		SELECT
+		<include refid="diagnosisColumns"/>
+		FROM medical_diagnosis a
+		<include refid="diagnosisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customer != null and customer.id != null and customer.id != ''">
+				AND a.customer_id = #{customer.id}
+			</if>
+			<if test="scheme != null and scheme.id != null and scheme.id != ''">
+				AND a.scheme_id = #{scheme.id}
+			</if>
+			<if test="price != null and price != ''">
+				AND a.price = #{price}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="createDate !=null">
+				AND month(a.create_date) = month(#{createDate})
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+
+	<select id="statistics" resultType="Diagnosis">
+		SELECT
+		sum(a.final_price) AS "finalPrice",
+		sum(a.already_pay) AS "alreadyPay",
+		sum(a.left_pay) AS "leftPay",
+		c1.name AS "customer.name",
+		c1.phone AS "customer.phone"
+		FROM medical_diagnosis a
+		<include refid="diagnosisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customer != null and customer.id != null and customer.id != ''">
+				AND a.customer_id = #{customer.id}
+			</if>
+			<if test="scheme != null and scheme.id != null and scheme.id != ''">
+				AND a.scheme_id = #{scheme.id}
+			</if>
+			<if test="price != null and price != ''">
+				AND a.price = #{price}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+			<if test="createDate !=null">
+				AND month(a.create_date) = month(#{createDate})
+			</if>
+		</where>
+		GROUP BY a.customer_id
+		ORDER BY leftPay DESC
+	</select>
+
+
+
+	<select id="findListForCustomer" resultType="Diagnosis">
+		SELECT
+			a.id AS "id",
+			a.customer_id AS "customer.id",
+			a.status AS "status",
+			a.del_flag AS "delFlag",
+			a.create_by AS "createBy.id",
+			a.create_date AS "createDate",
+			a.update_by AS "updateBy.id",
+			a.update_date AS "updateDate",
+			c1.name AS "customer.name",
+			c1.sex AS "customer.sex",
+			c1.birthday AS "customer.birthday",
+			c1.phone AS "customer.phone"
+		FROM medical_diagnosis a
+			LEFT JOIN medical_customer c1 ON c1.id = a.customer_id
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			AND c1.del_flag = #{DEL_FLAG_NORMAL}
+			<if test="customer != null and customer.id != null and customer.id != ''">
+				AND a.customer_id = #{customer.id}
+			</if>
+			<if test="status != null and status != ''">
+				AND a.status = #{status}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="Diagnosis">
+		SELECT 
+			<include refid="diagnosisColumns"/>
+		FROM medical_diagnosis a
+		<include refid="diagnosisJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO medical_diagnosis(
+		id,
+		customer_id,
+		status,
+		del_flag,
+		create_by,
+		create_date,
+		update_by,
+		update_date
+		) VALUES (
+		#{id},
+		#{customer.id},
+		#{status},
+		#{delFlag},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate}
+		)
+	</insert>
+
+	<insert id="insertFull">
+		INSERT INTO medical_diagnosis(
+			id,
+			customer_id,
+			health_result_id,
+			dental_result_id,
+			consentl_result_id,
+			record_result_id,
+			completion_result_id,
+			scheme_id,
+			price,
+			vip_id,
+			vip_ratio,
+			vip_price,
+			discount_id,
+			discount_ratio,
+			discount_price,
+			score_deduction,
+			score_price,
+			coupon_code,
+			coupon_price,
+			final_price,
+			already_pay,
+			left_pay,
+			status,
+			del_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		) VALUES (
+			#{id},
+			#{customer.id},
+			#{healthResult.id},
+			#{dentalResult.id},
+			#{consentlResult.id},
+			#{recordResult.id},
+			#{completionResult.id},
+			#{scheme.id},
+			#{price},
+			#{vip.id},
+			#{vipRatio},
+			#{vipPrice},
+			#{discount.id},
+			#{discountRatio},
+			#{discountPrice},
+			#{scoreDeduction},
+			#{scorePrice},
+			#{couponCode},
+			#{couponPrice},
+			#{finalPrice},
+			#{alreadyPay},
+			#{leftPay},
+			#{status},
+			#{delFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE medical_diagnosis SET
+		customer_id = #{customer.id},
+		health_result_id = #{healthResult.id},
+		dental_result_id = #{dentalResult.id},
+		consentl_result_id = #{consentlResult.id},
+		record_result_id = #{recordResult.id},
+		completion_result_id = #{completionResult.id},
+		scheme_id = #{scheme.id},
+		price = #{price},
+		vip_id = #{vip.id},
+		vip_ratio = #{vipRatio},
+		vip_price = #{vipPrice},
+		discount_id = #{discount.id},
+		discount_ratio = #{discountRatio},
+		discount_price = #{discountPrice},
+		score_deduction = #{scoreDeduction},
+		score_price = #{scorePrice},
+		coupon_code = #{couponCode},
+		coupon_price = #{couponPrice},
+		final_price = #{finalPrice},
+		already_pay = #{alreadyPay},
+		left_pay = #{leftPay},
+		status = #{status},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateHandle">
+		UPDATE medical_diagnosis SET
+		status = #{status},
+		handle_user_id = #{handleUser.id},
+		handle_office_id = #{handleOffice.id},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+
+	<update id="updateResult">
+		UPDATE medical_diagnosis SET
+		<if test="healthResult != null and healthResult.id != null and healthResult.id != ''">
+			health_result_id = #{healthResult.id},
+		</if>
+		<if test="dentalResult != null and dentalResult.id != null and dentalResult.id != ''">
+			dental_result_id = #{dentalResult.id},
+		</if>
+		<if test="consentlResult != null and consentlResult.id != null and consentlResult.id != ''">
+			consentl_result_id = #{consentlResult.id},
+		</if>
+		<if test="recordResult != null and recordResult.id != null and recordResult.id != ''">
+			record_result_id = #{recordResult.id},
+		</if>
+		<if test="completionResult != null and completionResult.id != null and completionResult.id != ''">
+			completion_result_id = #{completionResult.id},
+		</if>
+		<if test="scheme != null and scheme.id != null and scheme.id != ''">
+			scheme_id = #{scheme.id},
+		</if>
+		update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE medical_diagnosis SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+	
+</mapper>
